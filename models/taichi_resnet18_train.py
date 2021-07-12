@@ -8,7 +8,7 @@ import taichiUtil
 
 print('--------------------------------------Entering---------------------------------------')
 
-batch_size = 10
+batch_size = 20
 vals_ds = tfds.load('taichiSim', split=[
     tfds.core.ReadInstruction('tmp', from_=k, to=k+10, unit='%')
     for k in range(0, 100, 10)], batch_size=batch_size)
@@ -48,22 +48,24 @@ for epoch in range(n_epoch):
     test_epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
 
     train2 = train.shuffle(buffer_size=50)
-    for ex in train2:
-        x = tf.image.convert_image_dtype(ex['image'], tf.float32)
+    for i, ex in enumerate(train2):
+        x = tf.image.resize(tf.image.convert_image_dtype(ex['image'], tf.float32), [250, 250])
         ys = taichiUtil.dat2vec(ex)
         # class_encode = tf.reshape(tf.one_hot((ys[:,3:7] > 0).astype(int), 2), (-1, 8))
-        y = tf.one_hot((ys[3] > 0).astype(int), 2)
+        y = (ys[:,3] > 0).astype(int)
         l, grads = grad(model, x, y)
 
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
         epoch_loss_avg.update_state(l)
         epoch_accuracy.update_state(y, model(x, training=True))
 
-    confus = tf.zeros([3, 3], tf.int32)
+        print(f'Train iter {i}/{len(train2)}', end='\r')
+
+    confus = tf.zeros([2, 2], tf.int32)
     for ex in val:
-        x = tf.image.convert_image_dtype(ex['image'], tf.float32)
+        x = tf.image.resize(tf.image.convert_image_dtype(ex['image'], tf.float32), [250, 250])
         ys = taichiUtil.dat2vec(ex)
-        y = tf.one_hot((ys[3] > 0).astype(int), 2)
+        y = (ys[:,3] > 0).astype(int)
 
         y_ = model(x, training=False)
         l = objective(y_true=y, y_pred=y_)

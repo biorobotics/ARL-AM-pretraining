@@ -24,10 +24,11 @@ _CITATION = """
 """
 
 class TaichiSim(tfds.core.GeneratorBasedBuilder):
-    VERSION = tfds.core.Version('0.1.0')
+    VERSION = tfds.core.Version('0.2.0')
     RELEASE_NOTES = {
         '0.0.0': 'Initial dataset',
         '0.1.0': 'Working initial. With download.',
+        '0.2.0': 'Partitioned sim data, 10 excluded for test.'
     }
 
     def _info(self) -> tfds.core.DatasetInfo:
@@ -55,6 +56,9 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
 
                 't_pause': tf.float32,
                 't_seg': tf.float32,
+
+                'n_seq': tf.int32,
+                'n_sim': tf.int32
             }),
             # If there's a common (input, target) tuple from the
             # features, specify them here. They'll be used if
@@ -71,20 +75,26 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
             'https://drive.google.com/uc?id=191Qknp6zuqYBrwb1ie0onur2wUA-6Qza&export=download')
         # https://drive.google.com/file/d/191Qknp6zuqYBrwb1ie0onur2wUA-6Qza/view?usp=sharing
 
+        test = [1,3,5,8,25,38,48,66,70,89]
+        train = [i for i in range(1,95) if i not in test]
+
         # TODO(ai4AM): Returns the Dict[split names, Iterator[Key, Example]]
         return {
-            'tmp': self._generate_examples(path),
+            'test': self._generate_examples(path, excl_sims=set(train)),
+            'train': self._generate_examples(path, excl_sims=set(test)),
             # 'test': self._generate_examples(os.path.join(path, 'label_test.csv')),
         }
 
-    def _generate_examples(self, path):
+    def _generate_examples(self, path, excl_sims=()):
         path = os.path.join(path, 'taichi_sim_data')
         dirs = os.listdir(path)
-        p = re.compile('render_t[0-9]+_flip')
+        p = re.compile('render_t([0-9]+)_flip')
         i = 0
 
         for d in dirs:
             if p.match(d) is None: continue
+            simnum = int(p.match(d).group(1))
+            if simnum in excl_sims: continue
             fn = os.path.join(path, d)
 
             images = []
@@ -112,6 +122,7 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
                 'ex_v0': parms['v0'],
                 't_pause': parms['pause_len'],
                 't_seg': parms['seg_len'],
+                'n_sim': simnum,
             }
 
             for im in images:
@@ -120,6 +131,7 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
 
                 rec = record.copy()
                 rec['image'] = os.path.join(fn, im)
+                rec['n_seq'] = seqnum
                 yield f'im{i:04d}.png', rec
                 i += 1
                 
