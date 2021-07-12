@@ -24,9 +24,10 @@ _CITATION = """
 """
 
 class TaichiSim(tfds.core.GeneratorBasedBuilder):
-    VERSION = tfds.core.Version('0.0.0')
+    VERSION = tfds.core.Version('0.1.0')
     RELEASE_NOTES = {
-        '0.0.0': 'Initial dataset'
+        '0.0.0': 'Initial dataset',
+        '0.1.0': 'Working initial. With download.',
     }
 
     def _info(self) -> tfds.core.DatasetInfo:
@@ -66,14 +67,18 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
     def _split_generators(self, dl_manager: tfds.download.DownloadManager):
         """Returns SplitGenerators."""
         # TODO(ai4AM): Downloads the data and defines the splits
+        path = dl_manager.download_and_extract(
+            'https://drive.google.com/uc?id=191Qknp6zuqYBrwb1ie0onur2wUA-6Qza&export=download')
+        # https://drive.google.com/file/d/191Qknp6zuqYBrwb1ie0onur2wUA-6Qza/view?usp=sharing
 
         # TODO(ai4AM): Returns the Dict[split names, Iterator[Key, Example]]
         return {
-            'tmp': self._generate_examples('/Users/albertxu/Google Drive/taichi_sim_data/'),
+            'tmp': self._generate_examples(path),
             # 'test': self._generate_examples(os.path.join(path, 'label_test.csv')),
         }
 
     def _generate_examples(self, path):
+        path = os.path.join(path, 'taichi_sim_data')
         dirs = os.listdir(path)
         p = re.compile('render_t[0-9]+_flip')
         i = 0
@@ -110,6 +115,9 @@ class TaichiSim(tfds.core.GeneratorBasedBuilder):
             }
 
             for im in images:
+                seqnum = int(im[3:-4])
+                if seqnum < 30: continue
+
                 rec = record.copy()
                 rec['image'] = os.path.join(fn, im)
                 yield f'im{i:04d}.png', rec
