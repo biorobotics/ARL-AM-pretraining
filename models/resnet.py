@@ -4,7 +4,7 @@ from residual_block import make_basic_block_layer, make_bottleneck_layer
 # NUM_CLASSES=16
 
 class ResNetTypeI(tf.keras.Model):
-    def __init__(self, layer_params, drop_p=0, n_class=3):
+    def __init__(self, layer_params, drop_p=0, n_class=3, act=tf.keras.activations.softmax):
         super(ResNetTypeI, self).__init__()
 
         self.conv1 = tf.keras.layers.Conv2D(filters=64,
@@ -29,7 +29,7 @@ class ResNetTypeI(tf.keras.Model):
                                              stride=2)
 
         self.avgpool = tf.keras.layers.GlobalAveragePooling2D()
-        self.fc = tf.keras.layers.Dense(units=n_class, activation=tf.keras.activations.softmax)
+        self.fc = tf.keras.layers.Dense(units=n_class, activation=act)
         self.dr = tf.keras.layers.Dropout(drop_p)
 
     def call(self, inputs, training=None, mask=None):
@@ -55,7 +55,7 @@ class ResNetTypeI(tf.keras.Model):
 
 
 class ResNetTypeII(tf.keras.Model):
-    def __init__(self, layer_params, n_class=3):
+    def __init__(self, layer_params, n_class=3, act=tf.keras.activations.softmax):
         super(ResNetTypeII, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=64,
                                             kernel_size=(7, 7),
@@ -79,7 +79,7 @@ class ResNetTypeII(tf.keras.Model):
                                             stride=2)
 
         self.avgpool = tf.keras.layers.GlobalAveragePooling2D()
-        self.fc = tf.keras.layers.Dense(units=n_class, activation=tf.keras.activations.softmax)
+        self.fc = tf.keras.layers.Dense(units=n_class, activation=act)
 
     def call(self, inputs, training=None, mask=None):
         x = self.conv1(inputs)
@@ -96,8 +96,8 @@ class ResNetTypeII(tf.keras.Model):
         return output
 
 
-def resnet_18(drop_p=0, n_class=3):
-    return ResNetTypeI(layer_params=[2, 2, 2, 2], drop_p=drop_p, n_class=n_class)
+def resnet_18(drop_p=0, n_class=3, act=tf.keras.activations.softmax):
+    return ResNetTypeI(layer_params=[2, 2, 2, 2], drop_p=drop_p, n_class=n_class, act=act)
 
 
 def resnet_34():
