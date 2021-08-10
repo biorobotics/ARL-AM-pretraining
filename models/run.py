@@ -30,6 +30,7 @@ flags.DEFINE_integer('pretrain_bs', 32, 'Batch size for pretraining.')
 flags.DEFINE_integer('finetune_bs', 128, 'Batch size for finetuning.')
 flags.DEFINE_integer('lineareval_bs', 128, 'Batch size for linear evaluation.')
 flags.DEFINE_integer('eval_bs', 128, 'Batch size for evaluation.')
+flags.DEFINE_boolean('debug', False, 'Debug mode')
 
 tf.compat.v1.logging.set_verbosity(20)
 print(tf.compat.v1.logging.get_verbosity())
@@ -318,7 +319,8 @@ def evaluate(eval_ds, model, task):
             out = model(image, mode='eval', sup_layers=1, training=False)
         metrics.update_supervised_accuracy(test_class_acc, labels, out)
     
-    print(tf.math.argmax(out, axis=-1))
+    if FLAGS.debug:
+        print(tf.math.argmax(out, axis=-1))
     print('test classification accuracy')
     print(test_class_acc.result())
 
