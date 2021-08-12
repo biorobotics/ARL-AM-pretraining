@@ -11,7 +11,7 @@ ARL  Dataset and demo code
 ```bash
 export TFDS_DATA_DIR=/path/to/data/dir
 cd /path/to/repo
-tfds build ai4AM
+tfds build AM_plastic_defects
 ```
 
 First, we need to specify a location to store the dataset that we are going to download. By default, this points to `~/tensorflow_datasets/`. 
