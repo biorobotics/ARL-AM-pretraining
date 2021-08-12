@@ -29,7 +29,7 @@ class ResidualBlock(tf.keras.layers.Layer):
         out = self.bn1(out)
         out = self.relu1(out)
         out = self.conv2(out)
-        out = self.bn2(out) # batch norm??
+        out = self.bn2(out) 
         out = self.relu2(out+identity)
         return out
 
@@ -90,7 +90,6 @@ class CifarResNet(tf.keras.layers.Layer):
         self.conv1 = tf.keras.layers.Conv2D(channels, 3, strides=1, padding='same')
         self.bn1 = tf.keras.layers.BatchNormalization(axis=-1, momentum=FLAGS.momentum) #confirm parameter
         self.relu1 = tf.keras.layers.ReLU()
-        # self.maxpool1 = tf.keras.layers.MaxPool2D(pool_size=3, strides=2, padding='same')
 
         if block_type == 'residual': 
             block_fn = ResidualBlock
@@ -175,7 +174,6 @@ class ProjectionHead1(tf.keras.layers.Layer):
                 out = self.relu2(out) 
                 out = self.fc3(out)
                 out = self.bn3(out) 
-                # out = self.relu3(out) # relu? 
             if self.output_layer:
                 out = self.relu3(out)
                 out = self.output_layer(out)
@@ -239,7 +237,6 @@ class ProjectionHead(tf.keras.layers.Layer):
                 out = self.relu2(out) 
                 out = self.fc3(out)
                 out = self.bn3(out) 
-                # out = self.relu3(out) # relu? 
         else:  # supervised training and evaluation 
             out = inputs
             if sup_layers >= 1: 
@@ -266,7 +263,7 @@ class SupervisedHead(tf.keras.layers.Layer):
 class Model(tf.keras.Model): 
     def __init__(self, proj_layers=2, proj_size=256, num_classes=2, name='model'): 
         super(Model, self).__init__(name=name)
-        self.resnet = ResNet([3, 4, 6, 3])
+        self.resnet = ResNet([2, 2, 2, 2]) # ResNet-18
         self.ph = ProjectionHead(proj_layers=proj_layers, proj_size=proj_size)
         self.sh = SupervisedHead(num_classes)
     def call(self, inputs, mode='unsupervised', sup_layers=None): 
@@ -277,42 +274,11 @@ class Model(tf.keras.Model):
         if mode == 'supervised': 
             h = self.resnet(inputs)
             sup_in = self.ph(h, mode='supervised', sup_layers=sup_layers)
-            # print(sup_in)
             out = self.sh(sup_in)
             return out
         if mode == 'eval': 
             h = self.resnet(inputs)
             sup_in = self.ph(h, mode='eval', sup_layers=sup_layers)
-            # print(sup_in)
-            out = self.sh(sup_in)
-            return out
-
-class MultiheadModel(tf.keras.Model): 
-    def __init__(self, tasks, proj_layers=2, proj_size=256, num_classes=2, name='model'): 
-        super(Model, self).__init__(name=name)
-        self.resnet = ResNet([3, 4, 6, 3])
-        self.ph = ProjectionHead(proj_layers=proj_layers, proj_size=proj_size)
-        self.sh = SupervisedHead(num_classes)
-        task_heads = {}
-        for k in tasks.keys():
-            ph[tasks[k]['name']] = SupervisedHead(num_classes=tasks[k]['num_classes'])
-        self.task_heads = task_heads
-    def call(self, inputs, task_name=None, mode='unsupervised', sup_layers=None): 
-        if mode == 'unsupervised': 
-            h = self.resnet(inputs)
-            z = self.ph(h)
-            return z
-        if mode == 'supervised': 
-            h = self.resnet(inputs)
-            sup_in = self.ph(h, mode='supervised', sup_layers=sup_layers)
-            # print(sup_in)
-            out = self.task_heads[task_name](sup_in)
-            # out = self.sh(sup_in)
-            return out
-        if mode == 'eval': 
-            h = self.resnet(inputs)
-            sup_in = self.ph(h, mode='eval', sup_layers=sup_layers)
-            # print(sup_in)
             out = self.sh(sup_in)
             return out
 
@@ -337,34 +303,3 @@ class CifarModel(tf.keras.layers.Layer):
             sup_in = self.ph(h, mode='eval', sup_layers=sup_layers)
             out = self.sh(sup_in)
             return out
-
-# code below is directly from SimCLR official implementation
-# https://github.com/google-research/simclr/blob/master/tf2/model.py
-class WarmUpAndCosineDecayOrig(tf.keras.optimizers.schedules.LearningRateSchedule):
-  """Applies a warmup schedule on a given learning rate decay schedule."""
-
-  def __init__(self, base_learning_rate, num_examples, epochs, name=None):
-    super(WarmUpAndCosineDecay, self).__init__()
-    self.base_learning_rate = base_learning_rate
-    self.num_examples = num_examples
-    self.epochs = epochs
-    self._name = name
-
-  def __call__(self, step):
-    with tf.name_scope(self._name or 'WarmUpAndCosineDecay'):
-      warmup_steps = int(
-          round(WARMUP_EPOCHS * self.num_examples //
-                FLAGS.train_bs))
-      scaled_lr = self.base_learning_rate * math.sqrt(FLAGS.train_bs)
-      learning_rate = (
-          step / float(warmup_steps) * scaled_lr if warmup_steps else scaled_lr)
-
-      # Cosine decay learning rate schedule
-      total_steps = self.num_examples * self.epochs
-      # TODO(srbs): Cache this object.
-      cosine_decay = tf.keras.experimental.CosineDecay(
-          scaled_lr, total_steps - warmup_steps)
-      learning_rate = tf.where(step < warmup_steps, learning_rate,
-                               cosine_decay(step - warmup_steps))
-
-      return learning_rate

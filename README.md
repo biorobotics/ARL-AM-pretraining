@@ -28,7 +28,6 @@ import tensorflow_datasets as tfds
 tfds.load('am_plastic_defects')
 ```
 
-
 ## Running Model
 `python models/run.py --data_dir=$TFDS_DATA_DIR --dataset=name_of_dataset --mode=simclr`
 
@@ -44,3 +43,22 @@ def pretrain_transforms(image):
     image = random_flip(image)
     return image
 ```
+
+## Flags
+`--mode`: specify the pretraining mode in ['simclr', 'control_vector'].
+`--dataset`: dataset name.
+`--data_dir`: specify the directory in which data for `dataset` is stored.
+`--momentum`: Momuntum.
+`--img_size`: Size to resize input images to.
+`--temp`: Temperature parameter.
+`--save_model`: Whether to save model, default `False`.
+`--model_dir`:  Directory to save model.
+`--ckpt`:  Path to load checkpoint, default to `None`.
+`--pretrain_epochs`:  Epochs for pretraining. 
+`--finetune_epochs`:  Epochs for finetuning.
+`--lineareval_epochs`:  Epochs for linear evaluation.
+`--pretrain_bs`:  Batch size for pretraining.
+`--finetune_bs`:  Batch size for finetuning.
+`--lineareval_bs`:  Batch size for linear evaluation.
+`--eval_bs`:  Batch size for evaluation.
+`--debug`:  Debug mode will increase verbosity, default to `False`.
