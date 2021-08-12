@@ -11,16 +11,17 @@ import metrics
 import objectives as obj
 import data_utils
 
+
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string('mode', 'simclr', 'Pretraining mode')
+flags.DEFINE_enum('mode', 'simclr', ['simclr', 'control_vector'], 'Pretraining mode')
 flags.DEFINE_string('dataset', 'AMPlasticDefects', 'Dataset name')
 flags.DEFINE_string('data_dir', '/data', 'Data directory.')
 flags.DEFINE_float('momentum', 0.99, 'Momentum.', lower_bound=0.0)
 flags.DEFINE_integer('img_size', 200, 'Size of input image.', lower_bound=0)
 flags.DEFINE_float('temp', 0.5, 'Temperature.', lower_bound=0.0)
-flags.DEFINE_boolean('save_model', True, 'Whether to save model.')
-flags.DEFINE_string('model_dir', './tmp_model', 'Directory to save model.')
+flags.DEFINE_boolean('save_model', False, 'Whether to save model.')
+flags.DEFINE_string('model_dir', '/tmp', 'Directory to save model.')
 flags.DEFINE_string('ckpt', None, 'Path to load checkpoint.')
 flags.DEFINE_integer('pretrain_epochs', 50, 'Epochs for pretraining.')
 flags.DEFINE_integer('finetune_epochs', 30, 'Epochs for finetuning.')
@@ -185,7 +186,7 @@ def control_vec_pretrain(pretrain_ds, model, optimizer, task, epochs=10, lineare
     ds = pretrain_ds.filter(lambda x: x['label'] != task['excluded_label'])
     ds = ds.map(data_utils.control_vec_preprocess)
     ds = ds.shuffle(1000)
-    ds = ds.batch(FLAGS.finetune_bs)
+    ds = ds.batch(FLAGS.pretrain_bs)
 
     # loss, metrics, optimizers
     train_loss = tf.keras.metrics.Mean(name='train_loss')

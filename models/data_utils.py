@@ -85,15 +85,14 @@ def experiment_transforms(image):
     image = random_jittering(image)
     return image
 
-def pretrain_transforms(image, crop=False): 
-    if crop: 
-        image = random_crop_and_resize(image, 0.1)
+def pretrain_transforms(image): 
+    image = random_crop_and_resize(image, 0.1)
     image = random_flip(image)
     image = random_jittering(image, 0.2)
     return image
 
 def control_vec_transforms(image):
-    image = random_crop_and_resize(image, 0.1)
+    # image = random_crop_and_resize(image, 0.1)
     # image = random_flip(image)
     # image = random_jittering(image, 0.2)
     return image
