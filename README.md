@@ -5,9 +5,6 @@ ARL AI4AM Dataset and demo code
 `pip install tensorflow  tensorflow_datasets`
 
 ## Dataset Building
-Real 3d print data: `tfds build ai4AM`
+Download and prepare the dataset by using the tensorflow dataset tool:
 
-Shitty simulated fluid data: `tfds build taichiSim`
-
-## Running a model
-`cd models && python ai4am_resnet18_train.py`
+`tfds build ai4MA`
