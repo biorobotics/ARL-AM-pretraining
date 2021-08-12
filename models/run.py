@@ -14,7 +14,7 @@ import data_utils
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('mode', 'simclr', 'Pretraining mode')
-flags.DEFINE_string('dataset', 'Ai4amData', 'Dataset name')
+flags.DEFINE_string('dataset', 'AMPlasticDefects', 'Dataset name')
 flags.DEFINE_string('data_dir', '/data', 'Data directory.')
 flags.DEFINE_float('momentum', 0.99, 'Momentum.', lower_bound=0.0)
 flags.DEFINE_integer('img_size', 200, 'Size of input image.', lower_bound=0)
