@@ -22,7 +22,7 @@ _CITATION = """
 """
 
 
-class Ai4amData(tfds.core.GeneratorBasedBuilder):
+class AMPlasticDefects(tfds.core.GeneratorBasedBuilder):
     """DatasetBuilder for ai4AM dataset."""
 
     VERSION = tfds.core.Version('0.5.0')
