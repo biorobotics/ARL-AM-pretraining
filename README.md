@@ -7,4 +7,4 @@ ARL AI4AM Dataset and demo code
 ## Dataset Building
 Download and prepare the dataset by using the tensorflow dataset tool:
 
-`tfds build ai4MA`
+`tfds build ai4AM`
