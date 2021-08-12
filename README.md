@@ -20,7 +20,7 @@ First, we need to specify a location to store the dataset that we are going to d
 
 Download and prepare the dataset by using the tensorflow dataset tool:
 
-`tfds build ai4AM`
+`tfds build AM_plastic_defects`
 
 Once tensorflow has finished downloading and preparing the dataset, we can check that the dataset is properly set up with a line of python:
 ```python
