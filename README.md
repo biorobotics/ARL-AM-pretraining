@@ -2,7 +2,7 @@
 ARL AI4AM Dataset and demo code
 
 ### Dependencies
-`pip install tensorflow  tensorflow_datasets`
+`pip install tensorflow  tensorflow-datasets`
 
 ## Dataset Building
 ```bash
