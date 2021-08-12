@@ -22,7 +22,7 @@ Download and prepare the dataset by using the tensorflow dataset tool:
 Once tensorflow has finished downloading and preparing the dataset, we can check that the dataset is properly set up with a line of python:
 ```python
 import tensorflow_datasets as tfds
-tfds.load('ai4am_data')
+tfds.load('am_plastic_defects')
 ```
 
 
