@@ -18,3 +18,15 @@ First, we need to specify a location to store the dataset that we are going to d
 Download and prepare the dataset by using the tensorflow dataset tool:
 
 `tfds build ai4AM`
+
+Once tensorflow has finished downloading and preparing the dataset, we can check that the dataset is properly set up with a line of python:
+```python
+import tensorflow_datasets as tfds
+tfds.load('ai4am_data')
+```
+
+
+## Running Model
+`python models/run.py`
+
+
