@@ -6,7 +6,7 @@ ARL AI4AM Dataset and demo code
 
 ## Dataset Building
 ```bash
-export DATA_DIR=/path/to/data/dir
+export TFDS_DATA_DIR=/path/to/data/dir
 cd /path/to/repo
 tfds build ai4AM
 ```
