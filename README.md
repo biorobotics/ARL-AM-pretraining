@@ -27,6 +27,6 @@ tfds.load('am_plastic_defects')
 
 
 ## Running Model
-`python models/run.py --data_dir=/path/to/data/dir`
+`python models/run.py --data_dir=$TFDS_DATA_DIR`
 
 
