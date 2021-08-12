@@ -22,8 +22,8 @@ _CITATION = """
 """
 
 
-class Ai4amData(tfds.core.GeneratorBasedBuilder):
-    """DatasetBuilder for ai4AM dataset."""
+class AM_plastic_defects(tfds.core.GeneratorBasedBuilder):
+    """DatasetBuilder for AM plastic defect dataset."""
 
     VERSION = tfds.core.Version('0.5.0')
     RELEASE_NOTES = {
